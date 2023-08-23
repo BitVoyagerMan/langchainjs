@@ -16,7 +16,6 @@ export interface ParentDocumentRetrieverFields extends BaseRetrieverInput {
   childSplitter: TextSplitter;
   parentSplitter?: TextSplitter;
   idKey?: string;
-  childK?: number;
 }
 
 /**
@@ -45,8 +44,6 @@ export class ParentDocumentRetriever extends BaseRetriever {
 
   protected idKey = "doc_id";
 
-  protected childK?: number;
-
   constructor(fields: ParentDocumentRetrieverFields) {
     super(fields);
     this.vectorstore = fields.vectorstore;
@@ -54,11 +51,10 @@ export class ParentDocumentRetriever extends BaseRetriever {
     this.childSplitter = fields.childSplitter;
     this.parentSplitter = fields.parentSplitter;
     this.idKey = fields.idKey ?? this.idKey;
-    this.childK = fields.childK;
   }
 
   async _getRelevantDocuments(query: string): Promise<Document[]> {
-    const subDocs = await this.vectorstore.similaritySearch(query, this.childK);
+    const subDocs = await this.vectorstore.similaritySearch(query);
     // Maintain order
     const parentDocIds: string[] = [];
     for (const doc of subDocs) {

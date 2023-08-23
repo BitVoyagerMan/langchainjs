@@ -3,36 +3,28 @@
 import { test } from "@jest/globals";
 import { NotionAPILoader } from "../web/notionapi.js";
 
-test("Test Notion API Loader Page", async () => {
+test("Test Notion MD Loader Page", async () => {
   const loader = new NotionAPILoader({
     clientOptions: {
       auth: process.env.NOTION_INTEGRATION_TOKEN,
     },
     id: process.env.NOTION_PAGE_ID ?? "",
-    onDocumentLoaded: (current, total, currentTitle) => {
-      console.log(`Loaded Page: ${currentTitle} (${current}/${total})`);
-    },
+    type: "page",
   });
 
-  const docs = await loader.load();
-  const titles = docs.map((doc) => doc.metadata.properties.title);
-  console.log("Titles:", titles);
-  console.log(`Loaded ${docs.length} pages`);
+  const docs = await loader.loadAndSplit();
+  console.dir({ Page: docs }, { depth: Infinity });
 });
 
-test("Test Notion API Loader Database", async () => {
+test("Test Notion Web Loader Database", async () => {
   const loader = new NotionAPILoader({
     clientOptions: {
       auth: process.env.NOTION_INTEGRATION_TOKEN,
     },
     id: process.env.NOTION_DATABASE_ID ?? "",
-    onDocumentLoaded: (current, total, currentTitle) => {
-      console.log(`Loaded Page: ${currentTitle} (${current}/${total})`);
-    },
+    type: "database",
   });
 
-  const docs = await loader.load();
-  const titles = docs.map((doc) => doc.metadata.properties.title);
-  console.log("Titles:", titles);
-  console.log(`Loaded ${docs.length} pages from the database`);
+  const docs = await loader.loadAndSplit();
+  console.dir({ Database: docs }, { depth: Infinity });
 });
